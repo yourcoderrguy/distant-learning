@@ -5,17 +5,20 @@ import { GraduationCap, ArrowRight, BookOpen, Globe, Shield } from "lucide-react
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Simple Header */}
+      {/* Header with BOTH Sign In and Register */}
       <header className="bg-white border-b border-slate-200 py-4 px-6 md:px-12 flex justify-between items-center">
         <div className="flex items-center gap-2 text-slate-900">
           <GraduationCap className="h-8 w-8 text-primary" />
           <span className="text-xl font-bold tracking-tight">Kings LMS</span>
         </div>
-        <Link href="/login">
-          <Button variant="outline" className="font-medium">
-            Sign In
-          </Button>
-        </Link>
+        <div className="flex gap-3">
+          <Link href="/login">
+            <Button variant="ghost" className="font-medium">Sign In</Button>
+          </Link>
+          <Link href="/register">
+            <Button className="font-medium">Create Account</Button>
+          </Link>
+        </div>
       </header>
 
       {/* Hero Section */}

@@ -29,7 +29,7 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+ const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsLoading(true);
     setGlobalError(null);
     
@@ -39,10 +39,18 @@ export default function LoginPage() {
     const result = login(values.email, values.password);
 
     if (result.success) {
-      // The middleware handles the redirect based on the cookie, 
-      // but we force a router refresh to apply the state instantly.
-      router.push("/");
-      router.refresh(); 
+      // 1. Grab the user's role directly from the Zustand store
+      const userRole = useAuthStore.getState().user?.role;
+      
+      // 2. Route them directly to their specific dashboard
+      if (userRole === "admin") {
+        router.push("/admin/users");
+      } else if (userRole === "lecturer") {
+        router.push("/lecturer/courses");
+      } else {
+        router.push("/student/courses");
+      }
+      
     } else {
       setGlobalError(result.message || "Login failed");
       setIsLoading(false);

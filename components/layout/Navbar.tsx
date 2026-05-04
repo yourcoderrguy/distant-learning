@@ -1,24 +1,101 @@
 "use client";
 
 import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
-import { LogOut, User } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
+import { LogOut, User, Menu, BookOpen, CheckSquare, Users, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Navbar() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = () => {
     logout();
     router.push("/login");
   };
 
+  // Generate mobile links based on role
+  const getMobileLinks = () => {
+    if (!user) return [];
+    const baseLinks = [{ name: "Forum", href: "/forum", icon: MessageSquare }];
+    
+    switch (user.role) {
+      case "student":
+        return [
+          { name: "My Courses", href: "/student/courses", icon: BookOpen },
+          { name: "Assignments", href: "/student/assignments", icon: CheckSquare },
+          ...baseLinks
+        ];
+      case "lecturer":
+        return [
+          { name: "Manage Courses", href: "/lecturer/courses", icon: BookOpen },
+          { name: "Grade Submissions", href: "/lecturer/grading", icon: CheckSquare },
+          ...baseLinks
+        ];
+      case "admin":
+        return [
+          { name: "Manage Users", href: "/admin/users", icon: Users },
+          { name: "All Courses", href: "/admin/courses", icon: BookOpen },
+          ...baseLinks
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const mobileLinks = getMobileLinks();
+
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-white px-6 shadow-sm">
+    <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:px-6 shadow-sm sticky top-0 z-30">
       <div className="flex items-center gap-4">
-        {/* Mobile menu trigger would go here */}
+        {/* Mobile Menu Trigger (Only visible on small screens) */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[280px] bg-slate-900 text-slate-300 p-0 border-r-slate-800">
+            <div className="flex h-16 items-center justify-center border-b border-slate-800 px-4">
+              <h2 className="text-lg font-bold text-white tracking-wider">KINGS LMS</h2>
+            </div>
+            <nav className="flex-1 space-y-1 p-4">
+              {mobileLinks.map((link) => {
+                const isActive = pathname.startsWith(link.href);
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
+                      isActive 
+                        ? "bg-slate-800 text-white" 
+                        : "hover:bg-slate-800/50 hover:text-white"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {link.name}
+                  </Link>
+                );
+              })}
+              <div className="pt-6 mt-6 border-t border-slate-800">
+                 <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-slate-400 hover:text-red-500 hover:bg-red-500/10" 
+                    onClick={handleLogout}
+                  >
+                  <LogOut className="h-5 w-5 mr-3" />
+                  Logout
+                </Button>
+              </div>
+            </nav>
+          </SheetContent>
+        </Sheet>
+        
         <h1 className="text-xl font-semibold text-slate-800 md:hidden">Kings LMS</h1>
       </div>
       
@@ -31,7 +108,7 @@ export default function Navbar() {
           </span>
         </div>
         
-        <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600">
+        <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden md:flex text-slate-500 hover:text-red-600">
           <LogOut className="h-4 w-4 mr-2" />
           Logout
         </Button>

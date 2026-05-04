@@ -1,60 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { GraduationCap, Loader2 } from "lucide-react";
 
-// 1. Strict Validation Schema
-const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(4, { message: "Password must be at least 4 characters." }),
+const registerSchema = z.object({
+  fullname: z.string().min(2, "Full name is required"),
+  email: z.string().email("Please enter a valid university email"),
+  matric: z.string().min(2, "Matric / Staff ID is required"),
+  password: z.string().min(4, "Password must be at least 4 characters"),
 });
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const login = useAuthStore((state) => state.login);
-  const [globalError, setGlobalError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { fullname: "", email: "", matric: "", password: "" },
   });
 
- const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     setIsLoading(true);
-    setGlobalError(null);
+    // Simulate backend registration delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    setIsLoading(false);
     
-    // Simulate a brief network delay for realism
-    await new Promise((resolve) => setTimeout(resolve, 600)); 
-
-    const result = login(values.email, values.password);
-
-    if (result.success) {
-      // 1. Grab the user's role directly from the Zustand store
-      const userRole = useAuthStore.getState().user?.role;
-      
-      // 2. Route them directly to their specific dashboard
-      if (userRole === "admin") {
-        router.push("/admin/users");
-      } else if (userRole === "lecturer") {
-        router.push("/lecturer/courses");
-      } else {
-        router.push("/student/courses");
-      }
-      
-    } else {
-      setGlobalError(result.message || "Login failed");
-      setIsLoading(false);
-    }
+    alert("Registration request submitted to Admin for approval.");
+    router.push("/login");
   };
 
   return (
@@ -66,49 +47,42 @@ export default function LoginPage() {
               <GraduationCap className="h-8 w-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Kings University</CardTitle>
-          <CardDescription>Enter your credentials to access the portal</CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight">Create Account</CardTitle>
+          <CardDescription>Register for the Kings Distance Learning Portal</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="mary@kings.edu" 
-                {...form.register("email")}
-                className={form.formState.errors.email ? "border-red-500" : ""}
-              />
-              {form.formState.errors.email && (
-                <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
-              )}
+              <Label htmlFor="fullname">Full Name</Label>
+              <Input id="fullname" placeholder="John Doe" {...form.register("fullname")} />
+              {form.formState.errors.fullname && <p className="text-xs text-red-500">{form.formState.errors.fullname.message}</p>}
             </div>
-            
+            <div className="space-y-2">
+              <Label htmlFor="email">University Email</Label>
+              <Input id="email" type="email" placeholder="john@kings.edu" {...form.register("email")} />
+              {form.formState.errors.email && <p className="text-xs text-red-500">{form.formState.errors.email.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="matric">Matric Number / Staff ID</Label>
+              <Input id="matric" placeholder="CSC/2026/001" {...form.register("matric")} />
+              {form.formState.errors.matric && <p className="text-xs text-red-500">{form.formState.errors.matric.message}</p>}
+            </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                {...form.register("password")}
-                className={form.formState.errors.password ? "border-red-500" : ""}
-              />
-              {form.formState.errors.password && (
-                <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
-              )}
+              <Input id="password" type="password" {...form.register("password")} />
+              {form.formState.errors.password && <p className="text-xs text-red-500">{form.formState.errors.password.message}</p>}
             </div>
 
-            {globalError && (
-              <div className="p-3 rounded-md bg-red-50 text-red-600 text-sm font-medium text-center">
-                {globalError}
-              </div>
-            )}
-
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign In"}
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Submit Registration"}
             </Button>
           </form>
         </CardContent>
+        <CardFooter className="flex justify-center border-t p-4">
+          <p className="text-sm text-slate-500">
+            Already have an account? <Link href="/login" className="text-primary font-medium hover:underline">Sign In</Link>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   );

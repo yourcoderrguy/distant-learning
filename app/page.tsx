@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, ArrowRight, BookOpen, Globe, Shield } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -8,8 +9,13 @@ export default function Home() {
       {/* Header with BOTH Sign In and Register */}
       <header className="bg-white border-b border-slate-200 py-4 px-6 md:px-12 flex justify-between items-center">
         <div className="flex items-center gap-2 text-slate-900">
-          <GraduationCap className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold tracking-tight">Kings LMS</span>
+         <Image 
+  src="/logo.jpg" 
+  alt="Kings University Logo" 
+  width={100} 
+  height={50} 
+  className="object-contain rounded-md" 
+/>
         </div>
         <div className="flex gap-3">
           <Link href="/login">

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
-import { BookOpen, CheckSquare, Users, Home, LayoutDashboard, MessageSquare } from "lucide-react";
+import { BookOpen, CheckSquare, Users, MessageSquare } from "lucide-react";
+import Image from "next/image";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -42,11 +43,22 @@ export default function Sidebar() {
   const links = getLinks();
 
   return (
-    <aside className="hidden md:flex w-64 flex-col bg-slate-900 text-slate-300 transition-all duration-300">
-      <div className="flex h-16 items-center justify-center border-b border-slate-800 px-4">
-        <h2 className="text-lg font-bold text-white tracking-wider">KINGS LMS</h2>
+    /* Changed from bg-slate-900 to bg-secondary (Deep Navy Blue) */
+    <aside className="hidden md:flex w-64 flex-col bg-secondary text-secondary-foreground transition-all duration-300 shadow-xl z-10">
+      
+      {/* Sidebar Header with the New Logo */}
+      <div className="flex h-16 items-center gap-3 border-b border-white/10 px-6">
+        <Image 
+          src="/logo.jpg" 
+          alt="Kings University Logo" 
+          width={32} 
+          height={32} 
+          className="object-contain rounded-md bg-white p-0.5" 
+        />
+        <h2 className="text-lg font-bold tracking-wider text-white">KINGS LMS</h2>
       </div>
-      <nav className="flex-1 space-y-1 p-4">
+      
+      <nav className="flex-1 space-y-2 p-4">
         {links.map((link) => {
           const isActive = pathname.startsWith(link.href);
           const Icon = link.icon;
@@ -54,10 +66,11 @@ export default function Sidebar() {
             <Link
               key={link.name}
               href={link.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+              /* Changed active state to bg-primary (Royal Blue) */
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 isActive 
-                  ? "bg-slate-800 text-white" 
-                  : "hover:bg-slate-800/50 hover:text-white"
+                  ? "bg-primary text-white shadow-md" 
+                  : "text-white/70 hover:bg-white/10 hover:text-white"
               }`}
             >
               <Icon className="h-5 w-5" />

@@ -51,11 +51,11 @@ export default function Sidebar() {
         <Image 
           src="/logo.jpg" 
           alt="Kings University Logo" 
-          width={32} 
-          height={32} 
-          className="object-contain rounded-md bg-white p-0.5" 
+          width={100} 
+          height={80} 
+          className="object-contain rounded-md p-0.5" 
         />
-        <h2 className="text-lg font-bold tracking-wider text-white">KINGS LMS</h2>
+        {/* <h2 className="text-lg font-bold tracking-wider text-white">KINGS LMS</h2> */}
       </div>
       
       <nav className="flex-1 space-y-2 p-4">

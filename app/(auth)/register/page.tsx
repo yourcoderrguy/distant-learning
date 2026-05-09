@@ -78,10 +78,13 @@ export default function RegisterPage() {
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex justify-center border-t p-4">
+        <CardFooter className="flex justify-between border-t p-4">
           <p className="text-sm text-slate-500">
             Already have an account? <Link href="/login" className="text-primary font-medium hover:underline">Sign In</Link>
           </p>
+          <div className="grid"> 
+                    <Link href="/forgot-password" className="text-primary font-medium hover:underline">Forgot-Password</Link>
+                    </div>
         </CardFooter>
       </Card>
     </div>
